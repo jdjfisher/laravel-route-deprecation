@@ -6,7 +6,9 @@ namespace Jdjfisher\LaravelRouteDeprecation;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
+use ReflectionClass;
 use ReflectionMethod;
 
 class ServiceProvider extends BaseServiceProvider
@@ -21,20 +23,39 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->booted(function () {
             foreach (Route::getRoutes()->getRoutes() as $route) {
                 if (gettype($route->action['uses']) === 'string') {
+
+                    /** 
+                     * @var class-string<Controller> $controller 
+                     * @var string $action 
+                     */
                     [ $controller, $action ] = Str::parseCallback($route->action['uses']);
 
-                    $reflection = new ReflectionMethod($controller, $action);
+                    $actionReflection = new ReflectionMethod($controller, $action);
+                    $controllerReflection = new ReflectionClass($controller);
 
-                    if (!$reflection->getDocComment()) continue;
-
-                    $deprecated = str_contains($reflection->getDocComment(), '@deprecated');
-        
-                    if ($deprecated) {
+                    if ($this->deprecationTest($actionReflection) || $this->deprecationTest($controllerReflection)) {
                         $route->middleware('deprecated');
                     }
                 }
             }
         });
+    }
+
+    /**
+     * Determine whether a reflected definition is deprecated.
+     * 
+     * @param  ReflectionMethod|ReflectionClass  $reflection
+     * @return bool
+     */
+    private function deprecationTest(ReflectionMethod|ReflectionClass $reflection): bool
+    {
+        $annotation = $reflection->getDocComment();
+
+        if (!$annotation) {
+            return false;
+        }
+
+        return str_contains($annotation, '@deprecated');
     }
 
     /**

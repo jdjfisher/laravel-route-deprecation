@@ -4,13 +4,3 @@ parameters:
 			message: "#^Cannot access offset 'router' on Illuminate\\\\Contracts\\\\Foundation\\\\Application\\.$#"
 			count: 1
 			path: src/ServiceProvider.php
-
-		-
-			message: "#^Parameter \\#1 \\$objectOrMethod of class ReflectionMethod constructor expects object\\|string, string\\|null given\\.$#"
-			count: 1
-			path: src/ServiceProvider.php
-
-		-
-			message: "#^Parameter \\#2 \\$method of class ReflectionMethod constructor expects string, string\\|null given\\.$#"
-			count: 1
-			path: src/ServiceProvider.php
