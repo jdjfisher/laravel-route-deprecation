@@ -25,6 +25,8 @@ class ServiceProvider extends BaseServiceProvider
 
                     $reflection = new ReflectionMethod($controller, $action);
 
+                    if (!$reflection->getDocComment()) continue;
+
                     $deprecated = str_contains($reflection->getDocComment(), '@deprecated');
         
                     if ($deprecated) {
