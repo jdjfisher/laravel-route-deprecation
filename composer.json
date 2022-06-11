@@ -1,0 +1,30 @@
+{
+    "name": "jdjfisher/laravel-route-deprecation",
+    "version": "0.1.0",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Jdjfisher\\LaravelRouteDeprecation\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jordan Fisher",
+            "email": "jdjfisher@outlook.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0",
+        "laravel/framework": "^8.0|^9.0"
+    },
+    "require-dev": {},
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jdjfisher\\LaravelRouteDeprecation\\ServiceProvider"
+            ]
+        }
+    }
+}
