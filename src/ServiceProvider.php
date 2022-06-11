@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jdjfisher\LaravelRouteDeprecation;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -20,7 +22,7 @@ class ServiceProvider extends BaseServiceProvider
             foreach (Route::getRoutes()->getRoutes() as $route) {
                 if (gettype($route->action['uses']) === 'string') {
                     [ $controller, $action ] = Str::parseCallback($route->action['uses']);
-                    
+
                     $reflection = new ReflectionMethod($controller, $action);
 
                     $deprecated = str_contains($reflection->getDocComment(), '@deprecated');
