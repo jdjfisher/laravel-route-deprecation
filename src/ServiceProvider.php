@@ -8,8 +8,10 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
-use ReflectionClass;
+use ReflectionFunction;
 use ReflectionMethod;
+use ReflectionClass;
+use Closure;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -24,24 +26,29 @@ class ServiceProvider extends BaseServiceProvider
             return;
         }
 
-        // TODO: Caching?
         $this->app->booted(function () {
             foreach (Route::getRoutes()->getRoutes() as $route) {
+                $reflectors = [];
 
-                // TODO: Handle closure based routes?
-                if (gettype($route->action['uses']) === 'string') {
+                $definition = $route->action['uses'];
 
+                if ($definition instanceof Closure) {
+                    $reflectors[] = new ReflectionFunction($definition);
+                } else {
                     /** 
                      * @var class-string<Controller> $controller 
                      * @var string $action 
                      */
-                    [ $controller, $action ] = Str::parseCallback($route->action['uses']);
+                    [ $controller, $action ] = Str::parseCallback($definition);
 
-                    $actionReflection = new ReflectionMethod($controller, $action);
-                    $controllerReflection = new ReflectionClass($controller);
+                    $reflectors[] = new ReflectionMethod($controller, $action);
+                    $reflectors[] = new ReflectionClass($controller);
+                }
 
-                    if ($this->deprecationTest($actionReflection) || $this->deprecationTest($controllerReflection)) {
+                foreach ($reflectors as $reflector) {
+                    if ($this->deprecationTest($reflector)) {
                         $route->middleware('deprecated');
+                        break;
                     }
                 }
             }
@@ -51,11 +58,15 @@ class ServiceProvider extends BaseServiceProvider
     /**
      * Determine whether a reflected definition is deprecated.
      * 
-     * @param  ReflectionMethod|ReflectionClass  $reflection
+     * @param  ReflectionMethod|ReflectionClass|ReflectionFunction  $reflection
      * @return bool
      */
-    private function deprecationTest(ReflectionMethod|ReflectionClass $reflection): bool
+    private function deprecationTest(ReflectionMethod|ReflectionClass|ReflectionFunction $reflection): bool
     {
+        // if (!$reflection instanceof ReflectionClass) {
+        //     return $reflection->isDeprecated();
+        // }
+
         $annotation = $reflection->getDocComment();
 
         if (!$annotation) {
