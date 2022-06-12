@@ -20,8 +20,15 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register() 
     {
+        if (env('ROUTE_DEPRECATION_REFLECTION') === false) {
+            return;
+        }
+
+        // TODO: Caching?
         $this->app->booted(function () {
             foreach (Route::getRoutes()->getRoutes() as $route) {
+
+                // TODO: Handle closure based routes?
                 if (gettype($route->action['uses']) === 'string') {
 
                     /** 
