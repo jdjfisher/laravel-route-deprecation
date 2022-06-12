@@ -1,6 +1,6 @@
 {
     "name": "jdjfisher/laravel-route-deprecation",
-    "version": "0.1.0",
+    "description": "",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -19,8 +19,8 @@
         "laravel/framework": "^8.0|^9.0"
     },
     "require-dev": {
-        "phpstan/phpstan": "1.7.x-dev",
-        "phpunit/phpunit": "10.0.x-dev"
+        "phpstan/phpstan": "^1.7.10",
+        "phpunit/phpunit": "^9.5.11"
     },
     "minimum-stability": "dev",
     "extra": {
@@ -31,11 +31,11 @@
         }
     },
     "scripts": {
-        "check:types": "phpstan analyse --ansi --memory-limit 256M",
-        "check:tests": "phpunit --colors=always -d memory_limit=512M",
+        "types": "phpstan analyse --ansi --memory-limit 256M",
+        "tests": "phpunit --colors=always -d memory_limit=512M",
         "check": [
-            "@check:types",
-            "@check:tests"
+            "@types",
+            "@tests"
         ]
     }
 }
