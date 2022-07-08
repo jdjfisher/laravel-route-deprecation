@@ -25,7 +25,7 @@ class Deprecated
         if ($route instanceof Route) {
             Log::warning("Deprecation Notice: {$request->method()} $route->uri");
         }
-    
+
         return $next($request);
     }
 }

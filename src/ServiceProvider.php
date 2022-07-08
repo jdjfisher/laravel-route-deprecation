@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Jdjfisher\LaravelRouteDeprecation;
 
-use Illuminate\Support\ServiceProvider as BaseServiceProvider;
-use Illuminate\Support\Facades\Route;
+use Closure;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Illuminate\Support\Str;
+use ReflectionClass;
 use ReflectionFunction;
 use ReflectionMethod;
-use ReflectionClass;
-use Closure;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -20,7 +20,7 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return void
      */
-    public function register() 
+    public function register()
     {
         if (env('ROUTE_DEPRECATION_REFLECTION') === false) {
             return;
@@ -35,9 +35,9 @@ class ServiceProvider extends BaseServiceProvider
                 if ($definition instanceof Closure) {
                     $reflectors[] = new ReflectionFunction($definition);
                 } else {
-                    /** 
-                     * @var class-string<Controller> $controller 
-                     * @var string $action 
+                    /**
+                     * @var class-string<Controller> $controller
+                     * @var string $action
                      */
                     [ $controller, $action ] = Str::parseCallback($definition);
 
@@ -46,7 +46,7 @@ class ServiceProvider extends BaseServiceProvider
                 }
 
                 foreach ($reflectors as $reflector) {
-                    if ($this->deprecationTest($reflector)) {
+                    if ($this->deprecationCheck($reflector)) {
                         $route->middleware('deprecated');
                         break;
                     }
@@ -57,11 +57,11 @@ class ServiceProvider extends BaseServiceProvider
 
     /**
      * Determine whether a reflected definition is deprecated.
-     * 
+     *
      * @param  ReflectionMethod|ReflectionClass|ReflectionFunction  $reflection
      * @return bool
      */
-    private function deprecationTest(ReflectionMethod|ReflectionClass|ReflectionFunction $reflection): bool
+    public function deprecationCheck(ReflectionMethod|ReflectionClass|ReflectionFunction $reflection): bool
     {
         // if (!$reflection instanceof ReflectionClass) {
         //     return $reflection->isDeprecated();
@@ -69,7 +69,7 @@ class ServiceProvider extends BaseServiceProvider
 
         $annotation = $reflection->getDocComment();
 
-        if (!$annotation) {
+        if (! $annotation) {
             return false;
         }
 
