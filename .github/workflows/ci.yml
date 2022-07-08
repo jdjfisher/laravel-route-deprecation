@@ -44,5 +44,8 @@ jobs:
       - name: Execute tests
         run: composer run tests
 
+      - name: Check formatting
+        run: composer run pint -- --test
+
 
     
