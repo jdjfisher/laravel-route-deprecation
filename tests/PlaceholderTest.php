@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Test;
+namespace Jdjfisher\LaravelRouteDeprecation\Tests;
 
 use PHPUnit\Framework\TestCase;
 

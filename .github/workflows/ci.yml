@@ -38,6 +38,12 @@ jobs:
       - name: Install dependencies
         run: composer update --with='laravel/framework:${{ matrix.laravel }}' --prefer-dist --no-interaction --no-progress
 
+      - name: Check autoloading
+        run: |
+          composer self-update --snapshot
+          composer dump-autoload --optimize --strict-psr --dev
+          composer self-update --rollback
+
       - name: Execute static analysis
         run: composer run types
 
