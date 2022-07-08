@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - development
   pull_request:
     branches:
       - main 
+      - development 
 
 jobs:
   ci:
@@ -51,7 +53,7 @@ jobs:
         run: composer run tests
 
       - name: Check formatting
-        run: composer run pint -- --test
+        run: composer run format -- --test
 
 
     
